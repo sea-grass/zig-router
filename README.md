@@ -4,7 +4,7 @@ Straightforward HTTP-like request routing.
 
 ---
 
-Project is tested against zig 0.12.0-dev.2341+92211135f
+Project is tested against zig 0.13.0-dev.75+5c9eb4081
 
 ## Sample
 
@@ -51,23 +51,23 @@ fn getError() !void {
 }
 
 fn onRequest(arena: *std.heap.ArenaAllocator, request: Request) !void {
-    router.Router(.{↴
-        router.Decoder(.json, router.JsonBodyDecoder(.{}, 4096).decode),↴
-    }, .{↴
-        router.Route(.PUT, "/json", putJson, .{}),↴
-        router.Route(.GET, "/dynamic/:id/paths/:bundle", getDynamic, .{}),↴
-        router.Route(.GET, "/query", getQuery, .{}),↴
-        router.Route(.GET, "/error", getError, .{}),↴
-    }).match(arena.allocator(), .{↴
-        .method = request.method,↴
-        .path = request.path↴,
-        .query = request.query,↴
-        .body = .{ .reader = request.body.reader() }↴
-    }, .{ arena.allocator() }) catch |err| switch (err) {↴
+    router.Router(.{
+        router.Decoder(.json, router.JsonBodyDecoder(.{}, 4096).decode),
+    }, .{
+        router.Route(.PUT, "/json", putJson, .{}),
+        router.Route(.GET, "/dynamic/:id/paths/:bundle", getDynamic, .{}),
+        router.Route(.GET, "/query", getQuery, .{}),
+        router.Route(.GET, "/error", getError, .{}),
+    }).match(arena.allocator(), .{
+        .method = request.method,
+        .path = request.path,
+        .query = request.query,
+        .body = .{ .reader = request.body.reader() }
+    }, .{ arena.allocator() }) catch |err| switch (err) {
         error.not_found => return .{ .status = .not_found },
         error.bad_request => return .{ .status = .bad_request },
-        else => return err,↴
-    };↴
+        else => return err,
+    };
 }
 ```
 
